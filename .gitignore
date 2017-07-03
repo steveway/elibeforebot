@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# tempstuff
+*.csv
+*.bin.gz
+*.bin
+
 # C extensions
 *.so
 

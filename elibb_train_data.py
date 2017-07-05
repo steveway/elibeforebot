@@ -1,19 +1,22 @@
 import shorttext
 import elibb_get_threads as egt
+from shorttext.utils import standard_text_preprocessor_1
 
 
 def main():
+    preprocessor1 = standard_text_preprocessor_1()
     wvmodel = shorttext.utils.load_word2vec_model('./GoogleNews-vectors-negative300.bin.gz')
     traindatasource = egt.get_submissions()
     if type(traindatasource) == str:
-        trainclassdict = shorttext.data.retrieve_csvdata_as_dict(traindatasource)
+        trainclassdict = egt.read_from_csv(traindatasource)
     else:
         trainclassdict = traindatasource
-    # trainclassdict = shorttext.data.subjectkeywords()
-    kmodel = shorttext.classifiers.frameworks.CNNWordEmbed(len(trainclassdict.keys()))
+    kmodel = shorttext.classifiers.frameworks.CLSTMWordEmbed(len(trainclassdict.keys()))
     classifier = shorttext.classifiers.VarNNEmbeddedVecClassifier(wvmodel)
     classifier.train(trainclassdict, kmodel)
-    classifier.score('artificial intelligence')
+    print("Trained")
+    print(classifier.score(preprocessor1("ELI5 Why is the sky red?")))
+    print("Scored")
     classifier.save_compact_model('./nnlibvec_convnet_subdata.bin')
 
 if __name__ == "__main__":

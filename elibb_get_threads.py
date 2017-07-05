@@ -4,10 +4,12 @@ import sys
 import pprint
 import csv
 import os
+from shorttext.utils import standard_text_preprocessor_1
 
 
 def manualsortsubs(listofsubs):
-    choices = ["nothing", "askedbefore", "premisewrong"]
+    preprocessor1 = standard_text_preprocessor_1()
+    choices = ["nothing", "askedbefore", "premisewrong"] #TODO: decide on choices
     title = "Choose category"
     classdict = {"nothing": [], "askedbefore": [], "premisewrong": []}
     for sub in listofsubs:
@@ -15,7 +17,7 @@ def manualsortsubs(listofsubs):
         if choice is None:
             sys.exit(0)
         else:
-            classdict[choice].append(sub.strip(","))
+            classdict[choice].append(preprocessor1(sub))
     return classdict
 
 
@@ -77,7 +79,7 @@ def get_submissions(sublimit=None):
 
 
 def main():
-    classdict = get_submissions(10)
+    classdict = get_submissions(25)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(classdict)
 

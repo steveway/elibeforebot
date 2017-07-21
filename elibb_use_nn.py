@@ -1,5 +1,5 @@
 import shorttext
-import elibb_get_threads as egt
+# import elibb_get_threads as egt
 from shorttext.utils import standard_text_preprocessor_1
 
 

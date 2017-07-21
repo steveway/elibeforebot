@@ -32,7 +32,7 @@ def write_to_sqlite(sorted_dict):
     conn = sqlite3.connect('prepdata.db')
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute('''create table if not exists submissions (submission text, category text, id text, likes integer)''')
+    cur.execute('''create table if not exists submissions (submission text, category text, id text, likes integer, answered bool, corrected bool)''')
     for key, value in sorted_dict.items():
         for subitem in value:
             # check if submission already exists
@@ -40,7 +40,7 @@ def write_to_sqlite(sorted_dict):
             res = cur.fetchall()
             print(res)
             if not res:
-                cur.execute('''insert into submissions values (?,?,?,?)''', (subitem[0], key, subitem[1], 0))
+                cur.execute('''insert into submissions values (?,?,?,?,?,?)''', (subitem[0], key, subitem[1], 0))
     conn.commit()
     cur.close()
     conn.close()

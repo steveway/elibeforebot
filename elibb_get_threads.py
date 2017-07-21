@@ -6,13 +6,19 @@ import csv
 import os
 import sqlite3
 from shorttext.utils import standard_text_preprocessor_1
+try:
+    import ConfigParser
+except ImportError:
+    import configparser as ConfigParser
 
 
 def manualsortsubs(listofsubs):
     preprocessor1 = standard_text_preprocessor_1()
-    choices = ["nothing", "askedbefore", "premisewrong"]  # TODO: decide on choices
+    choices = ["nothing", "askedbefore", "premisewrong", "stupid", "selfanswered"]  # TODO: decide on choices
     title = "Choose category"
-    classdict = {"nothing": [], "askedbefore": [], "premisewrong": []}
+    classdict = {}
+    for choice in choices:
+        classdict[choice] = []
     for sub in listofsubs:
         choice = easygui.buttonbox(sub[0], title, choices)
         if choice is None:
@@ -86,11 +92,13 @@ def read_from_csv(fpath="dict.csv"):
 
 
 def get_subreddit(sreddit):
-    clientid = "secret"
-    clientsecret = "secret"
-    pwd = "secret"
-    useragent = "testscript by /u/elibeforebot"
-    usern = "elibeforebot"
+    config = ConfigParser.RawConfigParser(allow_no_value=True)
+    config.read("reddit.cfg")
+    clientid = config.get("reddit", "clientid")
+    clientsecret = config.get("reddit", "clientsecret")
+    pwd = config.get("reddit", "password")
+    useragent = config.get("reddit", "useragent")
+    usern = config.get("reddit", "user")
     reddit = praw.Reddit(client_id=clientid,
                          client_secret=clientsecret,
                          password=pwd,
@@ -121,7 +129,7 @@ def main():
     # conn = sqlite3.connect('prepdata.db')
     # conn.row_factory = sqlite3.Row
     # cur = conn.cursor()
-    classdict = get_submissions(2)
+    classdict = get_submissions(25)
     read_from_sqlite()
     # pp = pprint.PrettyPrinter(indent=4)
     # pp.pprint(classdict)

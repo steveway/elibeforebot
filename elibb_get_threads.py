@@ -14,7 +14,7 @@ except ImportError:
 
 def manualsortsubs(listofsubs):
     preprocessor1 = standard_text_preprocessor_1()
-    choices = ["nothing", "askedbefore", "premisewrong", "stupid", "selfanswered"]  # TODO: decide on choices
+    choices = ["nothing", "askedbefore", "premisewrong", "stupid", "selfanswered"]
     title = "Choose category"
     classdict = {}
     for choice in choices:
@@ -38,9 +38,8 @@ def write_to_sqlite(sorted_dict):
             # check if submission already exists
             cur.execute('''select * from submissions where id = ?''', [subitem[1]])
             res = cur.fetchall()
-            print(res)
             if not res:
-                cur.execute('''insert into submissions values (?,?,?,?,?,?)''', (subitem[0], key, subitem[1], 0))
+                cur.execute('''insert into submissions values (?,?,?,?,?,?)''', (subitem[0], key, subitem[1], 0, False, False))
     conn.commit()
     cur.close()
     conn.close()
@@ -66,11 +65,7 @@ def read_from_sqlite(fpath="prepdata.db"):
             classdict[row["category"]].append(row["submission"])
         except KeyError:
             classdict[row["category"]] = [row["submission"]]
-
-    pp = pprint.PrettyPrinter(indent=4)
-    for row in res:
-        pp.pprint(dict(row))
-    pp.pprint(classdict)
+    return classdict
 
 
 def read_from_csv(fpath="dict.csv"):
@@ -108,31 +103,34 @@ def get_subreddit(sreddit):
     return reddit.subreddit(sreddit)
 
 
-def get_submissions(sublimit=None):
-    if os.path.isfile("dict.csv"):
-        return read_from_csv("dict.csv")
+def get_submissions(sublimit=None, add_data=False):
+    if os.path.isfile("prepdata.db") and not add_data:
+        return read_from_sqlite("prepdata.db")
     else:
         elisub = get_subreddit("explainlikeimfive")
         already_done = set()
+        if os.path.isfile("prepdata.db"):
+            conn = sqlite3.connect("prepdata.db")
+            conn.row_factory = sqlite3.Row
+            cur = conn.cursor()
+            cur.execute('''select * from submissions''')
+            res = cur.fetchall()
+            for row in res:
+                already_done.add(row["id"])
         unsortedsubs = []
         for rethread in elisub.new(limit=sublimit):  # limit=None
             if rethread.id not in already_done:
                 unsortedsubs.append([rethread.title + " " + rethread.selftext, rethread.id])
                 already_done.add(rethread.id)
         classdict = manualsortsubs(unsortedsubs)
-        # write_to_csv(classdict)
         write_to_sqlite(classdict)
         return classdict
 
 
 def main():
-    # conn = sqlite3.connect('prepdata.db')
-    # conn.row_factory = sqlite3.Row
-    # cur = conn.cursor()
-    classdict = get_submissions(25)
-    read_from_sqlite()
-    # pp = pprint.PrettyPrinter(indent=4)
-    # pp.pprint(classdict)
+    classdict = get_submissions(100, True)
+    pp = pprint.PrettyPrinter(indent=4)
+    pp.pprint(read_from_sqlite())
 
 
 if __name__ == "__main__":

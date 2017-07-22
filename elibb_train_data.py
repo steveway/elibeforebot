@@ -15,7 +15,7 @@ def main():
     classifier = shorttext.classifiers.VarNNEmbeddedVecClassifier(wvmodel)
     classifier.train(trainclassdict, kmodel)
     print("Trained")
-    print(classifier.score(preprocessor1("ELI5 Why is the sky red?")))
+    print(classifier.score(preprocessor1("ELI5 Why is the sky red? I'm sure it is, don't tell me otherwise.")))
     print("Scored")
     classifier.save_compact_model('./nnlibvec_convnet_subdata.bin')
 

@@ -128,7 +128,7 @@ def get_submissions(sublimit=None, add_data=False):
 
 
 def main():
-    classdict = get_submissions(100, True)
+    classdict = get_submissions(150, True)
     pp = pprint.PrettyPrinter(indent=4)
     pp.pprint(read_from_sqlite())
 

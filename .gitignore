@@ -6,7 +6,6 @@ __pycache__/
 # tempstuff
 *.csv
 *.bin.gz
-*.bin
 *.cfg
 
 # C extensions

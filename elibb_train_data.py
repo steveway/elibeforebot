@@ -14,6 +14,11 @@ def main():
     kmodel = shorttext.classifiers.frameworks.CLSTMWordEmbed(len(trainclassdict.keys()))
     classifier = shorttext.classifiers.VarNNEmbeddedVecClassifier(wvmodel)
     classifier.train(trainclassdict, kmodel)
+    num_subs = 0
+    print("Number of trained submissions:")
+    for sub in trainclassdict.values():
+        num_subs += len(sub)
+    print(num_subs)
     print("Trained")
     print(classifier.score(preprocessor1("ELI5 Why is the sky red? I'm sure it is, don't tell me otherwise.")))
     print("Scored")

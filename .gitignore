@@ -7,6 +7,7 @@ __pycache__/
 *.csv
 *.bin.gz
 *.cfg
+*.xml
 
 # C extensions
 *.so
@@ -104,3 +105,4 @@ ENV/
 
 # mypy
 .mypy_cache/
+.idea/
